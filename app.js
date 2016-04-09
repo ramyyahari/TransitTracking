@@ -22,7 +22,7 @@ app.use(express.static(__dirname + '/public'));
 app.use('/', routes); //Handle all requests though our router.
 
 //Start our server listening on port 3000
-app.listen(80, function(err) {
+app.listen(3000, function(err) {
 	//Handle error
 	if (err)
 		return handleError(err);
