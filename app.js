@@ -22,12 +22,12 @@ app.use(express.static(__dirname + '/public'));
 app.use('/', routes); //Handle all requests though our router.
 
 //Start our server listening on port 3000
-app.listen(3000, function(err) {
+app.listen(80, function(err) {
 	//Handle error
 	if (err)
 		return handleError(err);
 	else
-		console.log("Init listening ...\nConnected.\nListening at http://127.0.0.1:3000\n"); //Print out dev url.
+		console.log("Init listening ...\nConnected.\nListening at http://127.0.0.1:80\n"); //Print out dev url.
 });
 
 // app is a callback function or an express application
