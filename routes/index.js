@@ -116,6 +116,6 @@ function getSatSouth(){
 
 }
 
-setInterval(getSatSouth, 5000)
-setInterval(getSatNorth, 5000)
+// setInterval(getSatSouth, 5000)
+// setInterval(getSatNorth, 5000)
 module.exports = router;
