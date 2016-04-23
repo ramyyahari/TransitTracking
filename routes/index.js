@@ -7,11 +7,14 @@ var express = require('express'),
 var fs = require('fs');
 var http = require('http');
 
+var lineReader = require('readline').createInterface({
+  terminal: false, input: require('fs').createReadStream('BusRoutesLog/SatNorth.txt')
+});
+
+var SatRouteCoords = [];
+
+
 //Saturday Route 
-
-
-
-
     var SaturdayNorth = [
     {"stopnum": 1, "lat": 46.7324183, "long": -117.1658558, "stopname": "Campus & Thatuna"},
     {"stopnum": 2, "lat": 46.7334988, "long": -117.1621618, "stopname": "Colorado @ Gyms"},
@@ -66,7 +69,7 @@ var http = require('http');
 /*SaturdayNorth.forEach(function(entry){
 	console.log(entry);
 })*/
-var busArray = ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"];
+var busArray = ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"];
 var i = 0;
 router.get('/', function(req, res) {
 	res.sendFile(__parentdirname + '/public/views/index.html');
@@ -74,7 +77,7 @@ router.get('/', function(req, res) {
 
 
 router.get('/getBus', function(req, res) {
-	busArray = ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"];
+	busArray = ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"];
 	if(i < busArray.length)
 	{
 		busArray[i] = 1;
@@ -88,6 +91,51 @@ router.get('/getBus', function(req, res) {
 	res.send(busArray);
 
 });
+
+
+
+
+//GetCoordinates();
+
+//most likely be writing the parser function here
+function GetCoordinates()
+{
+	//var newarr[50];
+	var oldlat;
+	var oldlong;
+
+	lineReader.on('line', function (line) {
+	//busArray = ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"];
+	//read from our routes file 
+	//parse lat and long
+	//check lat and long with our bus route dict 
+	//mark 1 if within bounds
+	var newstr = line.slice(55,80);
+	var aftersplit = newstr.split(',');
+	var latnlong = {"lat":aftersplit[0], "long":aftersplit[1]};
+	//newarr.push(latnlong);
+	SaturdayNorth.forEach(function(entry) {
+		if(Math.abs(entry.lat - aftersplit[0]) < 0.00025 && Math.abs(entry.long - aftersplit[1]) < 0.00025 && aftersplit[0] != oldlat && aftersplit[1] != oldlong )
+		{
+			busArray[entry.stopnum - 1] = 1;
+			console.log("stop nuber: " + entry.stopnum);
+			console.log(busArray);
+			oldlat = aftersplit[0];
+			oldlong = aftersplit[1];
+		}
+
+   // console.log(entry);
+});
+	
+
+  //console.log('Line from file:', latnlong);
+});
+
+
+
+}
+
+
 
 
 
@@ -176,6 +224,8 @@ function getSatSouth(){
 
 }
 
-// setInterval(getSatSouth, 5000)
+
+
+ setInterval(GetCoordinates(), 5000)
 // setInterval(getSatNorth, 5000)
 module.exports = router;
